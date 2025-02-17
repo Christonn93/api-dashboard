@@ -1,17 +1,32 @@
-import { useUserStore } from "@/hooks/store/useUserStore";
+import { useGetUserData } from "@/hooks/queryHooks/useGetUserData";
 
 export const UserPage = () => {
- const user = useUserStore((state) => state.user);
+ const userData = sessionStorage.getItem("userData");
 
- if (!user) return <p>Loading...</p>;
+ const userId = JSON.parse(userData || "{}")?.id;
+
+ if (!userData) {
+  return <p>No user data found!</p>;
+ }
+
+ const { data, error, isLoading } = useGetUserData(userId);
+
+ if (isLoading) {
+  return <p>Loading user data...</p>;
+ }
+
+ if (error) {
+  return <p style={{ color: "red" }}>{String(error)}</p>;
+ }
+
+ if (!data) {
+  return <p>No user data found!</p>;
+ }
 
  return (
   <div>
-   <h1>Welcome, {user.firstName}!</h1>
-   <p>Email: {user.email}</p>
-   <p>Username: {user.username}</p>
-   <p>Role: {user.role || "Not set"}</p>
-   <p>Location: {user.location || "Not set"}</p>
+   <h1>Welcome to the user page!</h1>
+   <div>{userId}</div>
   </div>
  );
 };

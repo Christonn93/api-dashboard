@@ -6,23 +6,33 @@ type User = {
  username: string;
  firstName: string;
  lastName: string;
- age?: number;
- location?: string;
- role?: string;
- work?: string;
- contactInfo?: string;
+ age?: number | null;
+ location?: string | null;
+ role?: string | null;
+ work?: string | null;
+ contactInfo?: string | null;
  token: string;
  refreshToken: string;
+ tokenExpiration: string;
+ refreshTokenExpiration: string;
 };
 
 type UserStore = {
  user: User | null;
  setUser: (userData: User) => void;
- logout: () => void;
+ clearUser: () => void;
 };
 
 export const useUserStore = create<UserStore>((set) => ({
  user: null,
- setUser: (userData) => set({ user: userData }),
- logout: () => set({ user: null }),
+
+ setUser: (userData) => {
+  set({ user: userData });
+  localStorage.setItem("user", JSON.stringify(userData));
+ },
+
+ clearUser: () => {
+  set({ user: null });
+  localStorage.removeItem("user");
+ },
 }));

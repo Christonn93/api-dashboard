@@ -1,27 +1,40 @@
+import { loginUser } from "@/services/loginUser";
 import { useMutation } from "@tanstack/react-query";
-import { useUserStore } from "@/hooks/store/useUserStore";
-import { registerUser } from "@/services/registerUser";
+import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
-type RegisterUser = {
+type LoginUser = {
  email: string;
  password: string;
 };
 
 export const useLoginUser = () => {
- const setUser = useUserStore((state: { setUser: any }) => state.setUser);
  const navigate = useNavigate();
 
- return useMutation({
-  mutationFn: async ({ email, password }: RegisterUser) => {
+ const mutation = useMutation({
+  mutationFn: async ({ email, password }: LoginUser) => {
    try {
-    const response = await registerUser({ email, password });
-    setUser(response);
-    navigate("/user");
+    const response = await loginUser({ email, password });
+    sessionStorage.setItem("userData", JSON.stringify(response?.data));
     return response;
-   } catch (error: unknown) {
-    throw new Error((error as Error).message);
+   } catch (error) {
+    toast.error(`Error when logging in: ${String(error)}`);
+    throw error;
    }
   },
+  onSuccess: () => {
+   toast.success("Logged in successfully!");
+   navigate("/user");
+  },
+  onError: (error) => {
+   console.error("Login failed:", error);
+  },
  });
+
+ return {
+  mutate: mutation.mutate,
+  isLoading: mutation.isPending,
+  isError: mutation.isError,
+  error: mutation.error,
+ };
 };

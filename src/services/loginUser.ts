@@ -9,8 +9,5 @@ export const loginUser = async ({ email, password }: { email: string; password: 
   return response;
  } catch (error: unknown) {
   console.error(error);
- } finally {
-  console.log("API connection established");
-  return;
  }
 };

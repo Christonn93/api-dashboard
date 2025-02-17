@@ -1,12 +1,12 @@
 import { axiosInstance } from "./axiosInstance";
 
-export const registerUser = async ({ email, password }: { email: string; password: string }) => {
+export const loginUser = async ({ email, password }: { email: string; password: string }) => {
  try {
-  const response = await axiosInstance.post("/auth/register", {
+  const response = await axiosInstance.post("/auth/login", {
    email,
    password,
   });
-  return response.data;
+  return response;
  } catch (error: unknown) {
   console.error(error);
  } finally {
